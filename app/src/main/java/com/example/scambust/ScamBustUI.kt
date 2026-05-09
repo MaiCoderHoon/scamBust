@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,20 +29,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 enum class SafetyStatus {
-    SAFE, SUSPICIOUS, SCAM
+    SAFE, SCANNING, SUSPICIOUS, SCAM, ERROR
 }
 
 @Composable
 fun ScamBustUI(
+    modifier: Modifier = Modifier,
     status: SafetyStatus,
     sender: String? = null,
     message: String? = null,
     onDismiss: () -> Unit = {}
 ) {
     val backgroundColor = when (status) {
-        SafetyStatus.SAFE -> Color(0xFF2E7D32) // High contrast Green
-        SafetyStatus.SUSPICIOUS -> Color(0xFFF9A825) // High contrast Yellow/Orange
-        SafetyStatus.SCAM -> Color(0xFFD32F2F) // High contrast Red
+        SafetyStatus.SAFE -> Color(0xFF2E7D32) // Green
+        SafetyStatus.SCANNING -> Color(0xFF1976D2) // Blue
+        SafetyStatus.SUSPICIOUS -> Color(0xFFF9A825) // Yellow
+        SafetyStatus.SCAM -> Color(0xFFD32F2F) // Red
+        SafetyStatus.ERROR -> Color(0xFF616161) // Grey
     }
 
     val contentColor = when (status) {
@@ -50,12 +55,21 @@ fun ScamBustUI(
     
     val statusText = when (status) {
         SafetyStatus.SAFE -> "NO THREAT DETECTED"
+        SafetyStatus.SCANNING -> "SCANNING SMS..."
         SafetyStatus.SUSPICIOUS -> "SUSPICIOUS ACTIVITY"
         SafetyStatus.SCAM -> "SCAM ALERT"
+        SafetyStatus.ERROR -> "SCAN FAILED"
+    }
+
+    val statusIcon = when (status) {
+        SafetyStatus.SAFE -> Icons.Default.CheckCircle
+        SafetyStatus.SCANNING -> Icons.Default.Refresh
+        SafetyStatus.SUSPICIOUS, SafetyStatus.SCAM -> Icons.Default.Warning
+        SafetyStatus.ERROR -> Icons.Default.Info
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(backgroundColor)
             .padding(32.dp),
@@ -67,7 +81,7 @@ fun ScamBustUI(
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(
-                imageVector = if (status == SafetyStatus.SAFE) Icons.Default.CheckCircle else Icons.Default.Warning,
+                imageVector = statusIcon,
                 contentDescription = "Status Icon",
                 tint = contentColor,
                 modifier = Modifier.height(120.dp).fillMaxWidth()
@@ -128,7 +142,7 @@ fun ScamBustUI(
                 }
             } else {
                 Text(
-                    text = "Waiting for incoming messages...",
+                    text = if (status == SafetyStatus.SCANNING) "Please wait..." else "Waiting for incoming messages...",
                     style = MaterialTheme.typography.titleLarge,
                     color = contentColor,
                     textAlign = TextAlign.Center,
