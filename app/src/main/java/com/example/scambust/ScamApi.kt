@@ -24,7 +24,7 @@ interface ScamApiService {
 object RetrofitClient {
     // Note: 10.0.2.2 is used to access localhost from Android emulator
     // Change to actual IP if using a physical device
-    private const val BASE_URL = "http://10.0.2.2:9000"
+    private const val BASE_URL = "http://51.20.191.217:8000/"
 
     val instance: ScamApiService by lazy {
         Retrofit.Builder()

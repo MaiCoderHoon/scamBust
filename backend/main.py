@@ -61,4 +61,4 @@ async def analyze_sms(request: SmsRequest):
 
 if __name__ == "__main__":
     # Run the server on all interfaces so the Android emulator can access it via 10.0.2.2
-    uvicorn.run(app, host="0.0.0.0", port=9000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
